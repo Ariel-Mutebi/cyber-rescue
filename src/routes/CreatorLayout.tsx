@@ -10,8 +10,9 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material'
-import SecurityIcon from '@mui/icons-material/Security'
+import Logo from '../components/Logo.tsx'
 import { api } from '../../convex/_generated/api'
+import ThemeToggle from '../components/ThemeToggle.tsx'
 
 export default function CreatorLayout() {
   const { isLoading, isAuthenticated } = useConvexAuth()
@@ -35,10 +36,11 @@ export default function CreatorLayout() {
     <>
       <AppBar position='static' color='transparent' elevation={0}>
         <Toolbar>
-          <SecurityIcon color='primary' sx={{ mr: 1 }} />
-          <Typography variant='h6' sx={{ flexGrow: 1 }}>
+          <Logo />
+          <Typography variant='h6' sx={{ flexGrow: 1, ml: 1 }}>
             Cyber Rescue
           </Typography>
+          <ThemeToggle />
           <Button onClick={() => void signOut()}>Sign out</Button>
         </Toolbar>
       </AppBar>

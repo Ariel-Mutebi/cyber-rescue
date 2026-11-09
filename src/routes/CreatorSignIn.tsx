@@ -3,7 +3,7 @@ import { useConvexAuth, useQuery } from 'convex/react'
 import { useAuthActions } from '@convex-dev/auth/react'
 import { Box, Button, Card, CardContent, Stack, Typography } from '@mui/material'
 import GoogleIcon from '@mui/icons-material/Google'
-import SecurityIcon from '@mui/icons-material/Security'
+import Logo from '../components/Logo.tsx'
 import { api } from '../../convex/_generated/api'
 
 export default function CreatorSignIn() {
@@ -21,7 +21,7 @@ export default function CreatorSignIn() {
       <Card sx={{ width: '100%', maxWidth: 400 }}>
         <CardContent>
           <Stack spacing={3} sx={{ alignItems: 'center', py: 2 }}>
-            <SecurityIcon color='primary' sx={{ fontSize: 48 }} />
+            <Logo size='md' />
             <Stack spacing={0.5} sx={{ alignItems: 'center' }}>
               <Typography variant='h5'>Operation: Cyber Rescue</Typography>
               <Typography color='text.secondary'>Sign in to host an event</Typography>

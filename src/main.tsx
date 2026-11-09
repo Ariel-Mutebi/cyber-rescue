@@ -13,7 +13,7 @@ const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string)
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ConvexAuthProvider client={convex}>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={theme} defaultMode='system'>
         <CssBaseline />
         <BrowserRouter>
           <App />
