@@ -1,8 +1,12 @@
-import { Navigate, Route, Routes } from 'react-router'
+import { Route, Routes } from 'react-router'
 import CreatorLayout from './routes/CreatorLayout'
 import CreatorSignIn from './routes/CreatorSignIn'
 import NewEvent from './routes/NewEvent'
 import EventPage from './routes/EventPage'
+
+import ManagerLayout from './routes/ManagerLayout'
+import ManagerSignIn from './routes/ManagerSignIn'
+import ManagerHome from './routes/ManagerHome'
 
 export default function App() {
   return (
@@ -14,7 +18,11 @@ export default function App() {
         <Route path='events/:eventId' element={<EventPage />} />
       </Route>
 
-      <Route path='*' element={<Navigate to='/creator/sign-in' replace />} />
+      <Route path='/manager/sign-in' element={<ManagerSignIn />} />
+
+      <Route path='/manager' element={<ManagerLayout />}>
+        <Route index element={<ManagerHome />} />
+      </Route>
     </Routes>
   )
 }
