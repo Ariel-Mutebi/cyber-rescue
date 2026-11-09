@@ -8,6 +8,11 @@ import ManagerLayout from './routes/ManagerLayout'
 import ManagerSignIn from './routes/ManagerSignIn'
 import ManagerHome from './routes/ManagerHome'
 
+import ParticipantLayout from './routes/ParticipantLayout'
+import JoinTeam from './routes/JoinTeam'
+import OpenTeams from './routes/OpenTeams'
+import TeamLobby from './routes/TeamLobby'
+
 export default function App() {
   return (
     <Routes>
@@ -22,6 +27,12 @@ export default function App() {
 
       <Route path='/manager' element={<ManagerLayout />}>
         <Route index element={<ManagerHome />} />
+      </Route>
+
+      <Route element={<ParticipantLayout />}>
+        <Route path='/join/:code' element={<JoinTeam />} />
+        <Route path='/events/:eventId/teams' element={<OpenTeams />} />
+        <Route path='/events/:eventId/team' element={<TeamLobby />} />
       </Route>
     </Routes>
   )

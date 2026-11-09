@@ -114,3 +114,19 @@ export const get = query({
     return access === null ? null : { ...access.event, role: access.role }
   },
 })
+
+export const getPublic = query({
+  args: { eventId: v.string() },
+  handler: async (ctx, { eventId }) => {
+    const id = ctx.db.normalizeId('events', eventId)
+    if (id === null) return null
+    const event = await ctx.db.get(id)
+    if (event === null) return null
+    return {
+      _id: event._id,
+      title: event.title,
+      scheduledAt: event.scheduledAt,
+      status: event.status,
+    }
+  },
+})

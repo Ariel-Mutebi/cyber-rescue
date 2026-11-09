@@ -13,7 +13,10 @@ import type * as events from "../events.js";
 import type * as http from "../http.js";
 import type * as lib_auth from "../lib/auth.js";
 import type * as lib_constants from "../lib/constants.js";
+import type * as lib_participant from "../lib/participant.js";
 import type * as lib_random from "../lib/random.js";
+import type * as lib_roles from "../lib/roles.js";
+import type * as participants from "../participants.js";
 import type * as teams from "../teams.js";
 import type * as users from "../users.js";
 
@@ -29,7 +32,10 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   "lib/auth": typeof lib_auth;
   "lib/constants": typeof lib_constants;
+  "lib/participant": typeof lib_participant;
   "lib/random": typeof lib_random;
+  "lib/roles": typeof lib_roles;
+  participants: typeof participants;
   teams: typeof teams;
   users: typeof users;
 }>;

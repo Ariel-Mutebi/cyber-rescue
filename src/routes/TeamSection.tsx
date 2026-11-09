@@ -1,6 +1,5 @@
 import { useState, type SubmitEvent } from 'react'
 import { useMutation, useQuery } from 'convex/react'
-import { ConvexError } from 'convex/values'
 import {
   Alert,
   Box,
@@ -19,10 +18,7 @@ import LinkIcon from '@mui/icons-material/Link'
 import { api } from '../../convex/_generated/api'
 import type { Id } from '../../convex/_generated/dataModel'
 import DeleteIcon from '@mui/icons-material/Delete'
-
-function errorMessage(err: unknown) {
-  return err instanceof ConvexError ? String(err.data) : 'Something went wrong'
-}
+import { errorMessage } from '../lib/errors'
 
 export default function TeamSection({
   eventId,

@@ -1,6 +1,5 @@
 import { useState, type SubmitEvent } from 'react'
 import { useAction, useMutation, useQuery } from 'convex/react'
-import { ConvexError } from 'convex/values'
 import {
   Alert,
   Box,
@@ -22,13 +21,10 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { api } from '../../convex/_generated/api'
+import { errorMessage } from '../lib/errors'
 import type { Id } from '../../convex/_generated/dataModel'
 
 type Credentials = { username: string; password: string }
-
-function errorMessage(err: unknown) {
-  return err instanceof ConvexError ? String(err.data) : 'Something went wrong'
-}
 
 export default function ManagerSection({
   eventId,

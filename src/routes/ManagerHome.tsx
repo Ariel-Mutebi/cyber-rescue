@@ -2,6 +2,7 @@ import { useQuery } from 'convex/react'
 import { Alert, Chip, CircularProgress, Stack, Typography, Box } from '@mui/material'
 import TeamSection from './TeamSection'
 import { api } from '../../convex/_generated/api'
+import CopyLinkButton from '../components/CopyLinkButton'
 
 export default function ManagerHome() {
   const me = useQuery(api.users.me)
@@ -32,6 +33,7 @@ export default function ManagerHome() {
       </Typography>
       <Box sx={{ pt: 3 }}>
         <TeamSection eventId={event._id} canCreate={event.status !== 'ended'} />
+        <CopyLinkButton path={`/events/${event._id}/teams`} label='Copy participant link' />
       </Box>
     </Stack>
   )

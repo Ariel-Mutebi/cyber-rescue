@@ -5,6 +5,7 @@ import { api } from '../../convex/_generated/api'
 import type { Id } from '../../convex/_generated/dataModel'
 import ManagerSection from './ManagerSection'
 import TeamSection from './TeamSection'
+import CopyLinkButton from '../components/CopyLinkButton'
 
 export default function EventPage() {
   const { eventId } = useParams()
@@ -39,6 +40,7 @@ export default function EventPage() {
       </Stack>
 
       <TeamSection eventId={event._id} canCreate={event.status !== 'ended'} />
+      <CopyLinkButton path={`/events/${event._id}/teams`} label='Copy participant link' />
       <ManagerSection eventId={event._id} canAdd={event.status !== 'ended'} />
     </Stack>
   )
