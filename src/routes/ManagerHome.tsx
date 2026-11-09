@@ -1,5 +1,6 @@
 import { useQuery } from 'convex/react'
-import { Alert, Chip, CircularProgress, Stack, Typography } from '@mui/material'
+import { Alert, Chip, CircularProgress, Stack, Typography, Box } from '@mui/material'
+import TeamSection from './TeamSection'
 import { api } from '../../convex/_generated/api'
 
 export default function ManagerHome() {
@@ -29,7 +30,9 @@ export default function ManagerHome() {
       <Typography color='text.secondary'>
         {new Date(event.scheduledAt).toLocaleString()}
       </Typography>
-      <Typography sx={{ pt: 2 }}>Dashboard coming soon.</Typography>
+      <Box sx={{ pt: 3 }}>
+        <TeamSection eventId={event._id} canCreate={event.status !== 'ended'} />
+      </Box>
     </Stack>
   )
 }

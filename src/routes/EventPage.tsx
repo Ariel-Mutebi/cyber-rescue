@@ -4,6 +4,7 @@ import { Alert, Button, Chip, CircularProgress, Stack, Typography } from '@mui/m
 import { api } from '../../convex/_generated/api'
 import type { Id } from '../../convex/_generated/dataModel'
 import ManagerSection from './ManagerSection'
+import TeamSection from './TeamSection'
 
 export default function EventPage() {
   const { eventId } = useParams()
@@ -37,6 +38,7 @@ export default function EventPage() {
         {event.description !== undefined && <Typography>{event.description}</Typography>}
       </Stack>
 
+      <TeamSection eventId={event._id} canCreate={event.status !== 'ended'} />
       <ManagerSection eventId={event._id} canAdd={event.status !== 'ended'} />
     </Stack>
   )

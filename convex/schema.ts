@@ -62,6 +62,7 @@ export default defineSchema({
     lastSolvedAt: v.optional(v.number()), // leaderboard tie-breaker
   })
     .index('by_join_code', ['joinCode'])
+    .index('by_event', ['eventId'])
     // open rooms: eventId == X and memberCount < TEAM_SIZE
     .index('by_event_and_member_count', ['eventId', 'memberCount'])
     .index('by_event_and_score', ['eventId', 'score']),
