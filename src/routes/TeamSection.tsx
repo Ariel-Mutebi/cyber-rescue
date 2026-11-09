@@ -12,11 +12,13 @@ import {
   Stack,
   TextField,
   Typography,
+  IconButton,
 } from '@mui/material'
 import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import LinkIcon from '@mui/icons-material/Link'
 import { api } from '../../convex/_generated/api'
 import type { Id } from '../../convex/_generated/dataModel'
+import DeleteIcon from '@mui/icons-material/Delete'
 
 function errorMessage(err: unknown) {
   return err instanceof ConvexError ? String(err.data) : 'Something went wrong'
@@ -31,6 +33,7 @@ export default function TeamSection({
 }) {
   const teams = useQuery(api.teams.listForEvent, { eventId })
   const createTeam = useMutation(api.teams.create)
+  const removeTeam = useMutation(api.teams.remove)
 
   const [name, setName] = useState('')
   const [creating, setCreating] = useState(false)
@@ -55,6 +58,18 @@ export default function TeamSection({
     await navigator.clipboard.writeText(`${window.location.origin}/join/${joinCode}`)
     setCopiedId(teamId)
     setTimeout(() => setCopiedId((current) => (current === teamId ? null : current)), 2000)
+  }
+
+  async function handleRemove(teamId: Id<'teams'>, teamName: string) {
+    if (!window.confirm(`Delete team "${teamName}"? Its join link will stop working.`)) {
+      return
+    }
+    setError(null)
+    try {
+      await removeTeam({ teamId })
+    } catch (err) {
+      setError(errorMessage(err))
+    }
   }
 
   return (
@@ -118,6 +133,15 @@ export default function TeamSection({
                 >
                   {copiedId === t._id ? 'Copied' : 'Copy link'}
                 </Button>
+                {t.memberCount === 0 && (
+                  <IconButton
+                    aria-label='delete team'
+                    size='small'
+                    onClick={() => void handleRemove(t._id, t.name)}
+                  >
+                    <DeleteIcon fontSize='small' />
+                  </IconButton>
+                )}
               </Stack>
             </CardContent>
           </Card>

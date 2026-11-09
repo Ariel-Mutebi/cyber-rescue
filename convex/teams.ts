@@ -75,3 +75,21 @@ export const listForEvent = query({
     }))
   },
 })
+
+export const remove = mutation({
+  args: { teamId: v.id('teams') },
+  handler: async (ctx, { teamId }) => {
+    const team = await ctx.db.get(teamId)
+    if (team === null) throw new ConvexError('Team not found')
+
+    // same error for "missing" and "not yours" so ids can't be probed
+    const access = await getEventAccess(ctx, team.eventId)
+    if (access === null) throw new ConvexError('Team not found')
+
+    if (team.memberCount > 0) {
+      throw new ConvexError('Only empty teams can be deleted')
+    }
+
+    await ctx.db.delete(teamId)
+  },
+})
