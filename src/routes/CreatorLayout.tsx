@@ -10,9 +10,9 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material'
-import Logo from '../components/Logo.tsx'
+import Logo from '../components/Logo'
 import { api } from '../../convex/_generated/api'
-import ThemeToggle from '../components/ThemeToggle.tsx'
+import ThemeToggle from '../components/ThemeToggle'
 
 export default function CreatorLayout() {
   const { isLoading, isAuthenticated } = useConvexAuth()

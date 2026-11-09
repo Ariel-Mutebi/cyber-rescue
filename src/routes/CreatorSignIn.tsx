@@ -3,7 +3,7 @@ import { useConvexAuth, useQuery } from 'convex/react'
 import { useAuthActions } from '@convex-dev/auth/react'
 import { Box, Button, Card, CardContent, Stack, Typography } from '@mui/material'
 import GoogleIcon from '@mui/icons-material/Google'
-import Logo from '../components/Logo.tsx'
+import Logo from '../components/Logo'
 import { api } from '../../convex/_generated/api'
 
 export default function CreatorSignIn() {

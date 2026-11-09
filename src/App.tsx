@@ -1,8 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router'
-import { Typography } from '@mui/material'
-import CreatorLayout from './routes/CreatorLayout.tsx'
-import CreatorSignIn from './routes/CreatorSignIn.tsx'
-import NewEvent from './routes/NewEvent.tsx'
+import CreatorLayout from './routes/CreatorLayout'
+import CreatorSignIn from './routes/CreatorSignIn'
+import NewEvent from './routes/NewEvent'
+import EventPage from './routes/EventPage'
 
 export default function App() {
   return (
@@ -11,11 +11,7 @@ export default function App() {
 
       <Route path='/creator' element={<CreatorLayout />}>
         <Route path='new-event' element={<NewEvent />} />
-        {/* placeholder so the redirect after creating an event lands somewhere */}
-        <Route
-          path='events/:eventId'
-          element={<Typography variant='h5'>Event page coming soon</Typography>}
-        />
+        <Route path='events/:eventId' element={<EventPage />} />
       </Route>
 
       <Route path='*' element={<Navigate to='/creator/sign-in' replace />} />
