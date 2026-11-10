@@ -1,9 +1,10 @@
-import { Route, Routes } from 'react-router'
+import { Route, Routes , Navigate} from 'react-router'
 import CreatorLayout from './routes/CreatorLayout'
 import SignInLayout from './routes/SignInLayout'
 import CreatorSignIn from './routes/CreatorSignIn'
 import NewEvent from './routes/NewEvent'
 import EventDashboard from './routes/EventDashboard'
+import CreatorEvents from './routes/CreatorEvents'
 
 import ManagerLayout from './routes/ManagerLayout'
 import ManagerSignIn from './routes/ManagerSignIn'
@@ -24,6 +25,8 @@ export default function App() {
       </Route>
 
       <Route path='/creator' element={<CreatorLayout />}>
+        <Route index element={<Navigate to='events' replace />} />
+        <Route path='events' element={<CreatorEvents />} />
         <Route path='new-event' element={<NewEvent />} />
         <Route path='events/:eventId' element={<EventDashboard />} />
       </Route>
@@ -38,6 +41,8 @@ export default function App() {
         <Route path='/events/:eventId/teams' element={<OpenTeams />} />
         <Route path='/events/:eventId/team' element={<TeamLobby />} />
       </Route>
+
+      <Route path='*' element={<Navigate to='/' replace />} />
     </Routes>
   )
 }
