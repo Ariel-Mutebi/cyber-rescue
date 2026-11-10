@@ -1,28 +1,24 @@
-import { Link, useParams } from 'react-router'
 import { useQuery } from 'convex/react'
-import { Alert, Button, Chip, CircularProgress, Stack, Typography } from '@mui/material'
-import { api } from '../../convex/_generated/api'
-import type { Id } from '../../convex/_generated/dataModel'
-import ManagerSection from './ManagerSection'
+import { Alert, Chip, CircularProgress, Stack, Typography } from '@mui/material'
 import TeamSection from './TeamSection'
+import { api } from '../../convex/_generated/api'
 import CopyLinkButton from '../components/CopyLinkButton'
 
-export default function EventPage() {
-  const { eventId } = useParams()
-  const event = useQuery(api.events.get, { eventId: eventId as Id<'events'> })
+export default function ManagerDashboard() {
+  const me = useQuery(api.users.me)
+  const eventId = me?.managerOfEventId
+  const event = useQuery(api.events.get, eventId === undefined ? 'skip' : { eventId })
 
-  if (event === undefined) {
+  if (me === undefined || (eventId !== undefined && event === undefined)) {
     return <CircularProgress />
   }
 
-  if (event === null) {
+  // events.get returns null for an expired account
+  if (event === null || event === undefined) {
     return (
-      <Stack spacing={2} sx={{ alignItems: 'flex-start' }}>
-        <Alert severity='warning'>Event not found</Alert>
-        <Button component={Link} to='/creator/new-event'>
-          Schedule an event
-        </Button>
-      </Stack>
+      <Alert severity='warning'>
+        You don't have access to an event. Your account may have expired.
+      </Alert>
     )
   }
 
@@ -41,7 +37,6 @@ export default function EventPage() {
 
       <TeamSection eventId={event._id} canCreate={event.status !== 'ended'} />
       <CopyLinkButton path={`/events/${event._id}/teams`} label='Copy participant link' />
-      <ManagerSection eventId={event._id} canAdd={event.status !== 'ended'} />
     </Stack>
   )
 }

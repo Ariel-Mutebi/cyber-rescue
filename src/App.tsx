@@ -3,11 +3,11 @@ import CreatorLayout from './routes/CreatorLayout'
 import SignInLayout from './routes/SignInLayout'
 import CreatorSignIn from './routes/CreatorSignIn'
 import NewEvent from './routes/NewEvent'
-import EventPage from './routes/EventPage'
+import EventDashboard from './routes/EventDashboard'
 
 import ManagerLayout from './routes/ManagerLayout'
 import ManagerSignIn from './routes/ManagerSignIn'
-import ManagerHome from './routes/ManagerHome'
+import ManagerDashboard from './routes/ManagerDashboard'
 
 import ParticipantLayout from './routes/ParticipantLayout'
 import JoinTeam from './routes/JoinTeam'
@@ -24,11 +24,11 @@ export default function App() {
 
       <Route path='/creator' element={<CreatorLayout />}>
         <Route path='new-event' element={<NewEvent />} />
-        <Route path='events/:eventId' element={<EventPage />} />
+        <Route path='events/:eventId' element={<EventDashboard />} />
       </Route>
 
       <Route path='/manager' element={<ManagerLayout />}>
-        <Route index element={<ManagerHome />} />
+        <Route index element={<ManagerDashboard />} />
       </Route>
 
       <Route element={<ParticipantLayout />}>
