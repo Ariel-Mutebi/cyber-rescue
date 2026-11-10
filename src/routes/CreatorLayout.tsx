@@ -31,7 +31,7 @@ export default function CreatorLayout() {
 
   return (
     <Background>
-      <Navbar signOut={() => signOut()} />
+      <Navbar signOut={() => signOut()} isCreator={true} />
       <Box sx={{ pb: 4 }}>
         <Container
           component={Paper}

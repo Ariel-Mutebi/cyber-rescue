@@ -1,12 +1,14 @@
-import { AppBar, Toolbar, Typography, Button } from "@mui/material"
-import Logo from "./Logo"
-import ThemeToggle from "./ThemeToggle"
+import { AppBar, Toolbar, Typography, Button } from '@mui/material'
+import { Link } from 'react-router'
+import Logo from './Logo'
+import ThemeToggle from './ThemeToggle'
 
 interface NavbarProps {
+  isCreator?: boolean
   signOut?: () => void
 }
 
-export default function Navbar({ signOut }: NavbarProps) {
+export default function Navbar({ isCreator, signOut }: NavbarProps) {
   return (
     <AppBar position='static' color='transparent' elevation={0}>
       <Toolbar sx={{ gap: 1 }}>
@@ -22,6 +24,11 @@ export default function Navbar({ signOut }: NavbarProps) {
           Cyber Rescue
         </Typography>
         <ThemeToggle />
+        {isCreator && (
+          <Button component={Link} to='/creator/events'>
+            My events
+          </Button>
+        )}
         {signOut && (
           <Button
             variant='outlined'

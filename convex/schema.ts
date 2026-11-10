@@ -38,7 +38,7 @@ export default defineSchema({
       v.literal('ended'),
     ),
     tripleLockWindowMs: v.number(), // 30_000
-  }).index('by_creator', ['creatorId']),
+  }).index('by_creator', ['creatorId']).index('by_status_and_scheduled_at', ['status', 'scheduledAt']),
 
   // One-off identity: handle only, no personal info.
   // The raw session token lives in the browser; only its hash is stored.

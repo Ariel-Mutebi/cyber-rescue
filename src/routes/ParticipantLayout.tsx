@@ -1,19 +1,25 @@
 import { Outlet } from 'react-router'
-import { AppBar, Container, Toolbar, Typography } from '@mui/material'
-import Logo from '../components/Logo'
+import { Box, Container, Paper } from '@mui/material'
+import Background from '../components/Background'
+import Navbar from '../components/Navbar'
 
 export default function ParticipantLayout() {
   return (
-    <>
-      <AppBar position='static' color='transparent' elevation={0}>
-        <Toolbar>
-          <Logo />
-          <Typography variant='h6' sx={{ ml: 1 }}>Cyber Rescue</Typography>
-        </Toolbar>
-      </AppBar>
-      <Container maxWidth='sm' sx={{ py: 4 }}>
-        <Outlet />
-      </Container>
-    </>
+    <Background>
+      <Navbar />
+      <Box sx={{ pb: 4 }}>
+        <Container
+          component={Paper}
+          elevation={10}
+          maxWidth='sm'
+          sx={{
+            py: 4,
+            bgcolor: 'background.default',
+          }}
+        >
+          <Outlet />
+        </Container>
+      </Box>
+    </Background>
   )
 }

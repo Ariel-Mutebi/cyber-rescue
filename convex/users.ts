@@ -6,6 +6,7 @@ import { action, internalQuery, query, mutation } from './_generated/server'
 import { requireEventOwner } from './lib/auth'
 import { MAX_MANAGERS_PER_EVENT, managerExpiry } from './lib/constants'
 import { randomString } from './lib/random'
+import { deleteUserAndAuth } from './lib/accounts'
 
 const USERNAME_PATTERN = /^[a-z0-9_-]{3,30}$/
 
@@ -125,26 +126,6 @@ export const revokeManager = mutation({
     // throws unless the caller is the creator who owns this manager's event
     await requireEventOwner(ctx, manager.managerOfEventId)
 
-    // Convex Auth keeps the credentials and sessions in its own tables
-    const accounts = await ctx.db
-      .query('authAccounts')
-      .withIndex('userIdAndProvider', (q) => q.eq('userId', managerId))
-      .collect()
-    for (const account of accounts) await ctx.db.delete(account._id)
-
-    const sessions = await ctx.db
-      .query('authSessions')
-      .withIndex('userId', (q) => q.eq('userId', managerId))
-      .collect()
-    for (const session of sessions) {
-      const tokens = await ctx.db
-        .query('authRefreshTokens')
-        .withIndex('sessionId', (q) => q.eq('sessionId', session._id))
-        .collect()
-      for (const token of tokens) await ctx.db.delete(token._id)
-      await ctx.db.delete(session._id)
-    }
-
-    await ctx.db.delete(managerId)
+    await deleteUserAndAuth(ctx, managerId)
   },
 })

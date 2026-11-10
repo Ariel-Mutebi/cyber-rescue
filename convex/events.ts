@@ -7,6 +7,7 @@ import {
   MAX_MANAGERS_PER_EVENT,
   managerExpiry,
 } from './lib/constants'
+import { internal } from './_generated/api'
 
 const TITLE_MAX = 100
 const DESCRIPTION_MAX = 1000
@@ -128,5 +129,48 @@ export const getPublic = query({
       scheduledAt: event.scheduledAt,
       status: event.status,
     }
+  },
+})
+
+// Public: events that are running or still to come, kept apart
+export const listPublic = query({
+  args: {},
+  handler: async (ctx) => {
+    const [live, upcoming] = await Promise.all([
+      ctx.db
+        .query('events')
+        .withIndex('by_status_and_scheduled_at', (q) => q.eq('status', 'live'))
+        .take(50),
+      ctx.db
+        .query('events')
+        .withIndex('by_status_and_scheduled_at', (q) => q.eq('status', 'scheduled'))
+        .take(50),
+    ])
+
+    // creatorId stays private
+    const toPublic = (e: Doc<'events'>) => ({
+      _id: e._id,
+      title: e.title,
+      description: e.description,
+      scheduledAt: e.scheduledAt,
+      startedAt: e.startedAt,
+    })
+
+    return { live: live.map(toPublic), upcoming: upcoming.map(toPublic) }
+  },
+})
+
+export const remove = mutation({
+  args: { eventId: v.id('events') },
+  handler: async (ctx, { eventId }) => {
+    const { event } = await requireEventOwner(ctx, eventId)
+    if (event.status === 'live') {
+      throw new ConvexError('End the event before deleting it')
+    }
+
+    // gone immediately: nobody can reach it and every list updates live
+    await ctx.db.delete(eventId)
+    // teams, players, managers and the rest are cleaned up in the background
+    await ctx.scheduler.runAfter(0, internal.cleanup.deleteEventData, { eventId })
   },
 })
