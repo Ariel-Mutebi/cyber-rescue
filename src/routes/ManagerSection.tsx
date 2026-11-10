@@ -90,7 +90,7 @@ export default function ManagerSection({
           variant='contained'
           startIcon={creating ? <CircularProgress size={18} /> : <PersonAddIcon />}
           disabled={!canAdd || creating || username.trim().length < 3}
-          sx={{ flexShrink: 0 }}
+          sx={{ flexShrink: 0, alignSelf: 'start' }}
         >
           Add
         </Button>

@@ -5,6 +5,7 @@ import {
   Box,
   CircularProgress,
   Container,
+  Paper,
 } from '@mui/material'
 import { api } from '../../convex/_generated/api'
 import Navbar from '../components/Navbar'
@@ -31,9 +32,19 @@ export default function ManagerLayout() {
   return (
     <Background>
       <Navbar signOut={() => signOut()} />
-      <Container maxWidth='md' sx={{ py: 4 }}>
-        <Outlet />
-      </Container>
+      <Box sx={{ pb: 4 }}>
+        <Container
+          component={Paper}
+          elevation={10}
+          maxWidth='sm'
+          sx={{
+            py: 4,
+            bgcolor: 'background.default',
+          }}
+        >
+          <Outlet />
+        </Container>
+      </Box>
     </Background>
   )
 }

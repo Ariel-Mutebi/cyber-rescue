@@ -1,19 +1,33 @@
+import { Link as RouterLink, Outlet, useLocation } from 'react-router'
 import { useQuery } from 'convex/react'
-import { Alert, Chip, CircularProgress, Stack, Typography } from '@mui/material'
-import TeamSection from './TeamSection'
+import {
+  Alert,
+  Box,
+  Chip,
+  CircularProgress,
+  Stack,
+  Tab,
+  Tabs,
+  Typography,
+} from '@mui/material'
 import { api } from '../../convex/_generated/api'
-import CopyLinkButton from '../components/CopyLinkButton'
+
+// Managers see a subset of the creator tabs. Same shape, same rules.
+const TABS = [{ label: 'Teams', segment: 'teams' }] as const
 
 export default function ManagerDashboard() {
+  const location = useLocation()
   const me = useQuery(api.users.me)
   const eventId = me?.managerOfEventId
-  const event = useQuery(api.events.get, eventId === undefined ? 'skip' : { eventId })
+  const event = useQuery(
+    api.events.get,
+    eventId === undefined ? 'skip' : { eventId },
+  )
 
   if (me === undefined || (eventId !== undefined && event === undefined)) {
     return <CircularProgress />
   }
 
-  // events.get returns null for an expired account
   if (event === null || event === undefined) {
     return (
       <Alert severity='warning'>
@@ -21,6 +35,9 @@ export default function ManagerDashboard() {
       </Alert>
     )
   }
+
+  const segment = location.pathname.split('/').pop()
+  const tabValue = Math.max(0, TABS.findIndex((t) => t.segment === segment))
 
   return (
     <Stack spacing={4}>
@@ -32,11 +49,25 @@ export default function ManagerDashboard() {
         <Typography color='text.secondary'>
           {new Date(event.scheduledAt).toLocaleString()}
         </Typography>
-        {event.description !== undefined && <Typography>{event.description}</Typography>}
+        {event.description !== undefined && (
+          <Typography>{event.description}</Typography>
+        )}
       </Stack>
 
-      <TeamSection eventId={event._id} canCreate={event.status !== 'ended'} />
-      <CopyLinkButton path={`/events/${event._id}/teams`} label='Copy participant link' />
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={tabValue}>
+          {TABS.map((tab) => (
+            <Tab
+              key={tab.segment}
+              label={tab.label}
+              component={RouterLink}
+              to={`/manager/${tab.segment}`}
+            />
+          ))}
+        </Tabs>
+      </Box>
+
+      <Outlet context={{ event }} />
     </Stack>
   )
 }

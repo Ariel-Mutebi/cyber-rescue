@@ -1,17 +1,45 @@
-import { Link as RouterLink, useParams, useNavigate } from 'react-router'
+import {
+  Link as RouterLink,
+  Outlet,
+  useLocation,
+  useNavigate,
+  useParams,
+} from 'react-router'
 import { useQuery } from 'convex/react'
-import { Alert, Button, Chip, CircularProgress, Stack, Typography } from '@mui/material'
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Stack,
+  Tab,
+  Tabs,
+  Typography,
+} from '@mui/material'
 import { api } from '../../convex/_generated/api'
 import type { Id } from '../../convex/_generated/dataModel'
-import ManagerSection from './ManagerSection'
-import TeamSection from './TeamSection'
-import CopyLinkButton from '../components/CopyLinkButton'
 import DeleteEventButton from '../components/DeleteEventButton'
+
+/**
+ * Single source of truth for creator tabs.
+ * Order here defines tab order; `segment` is the last URL path segment
+ * and matches a child <Route path=…> in App.tsx.
+ * Add a tab: one entry here + one child route. Nothing else.
+ */
+const TABS = [
+  { label: 'Teams', segment: 'teams' },
+  { label: 'Managers', segment: 'managers' },
+] as const
 
 export default function EventDashboard() {
   const { eventId } = useParams()
+  const location = useLocation()
   const navigate = useNavigate()
-  const event = useQuery(api.events.get, { eventId: eventId as Id<'events'> })
+
+  const event = useQuery(api.events.get, {
+    eventId: eventId as Id<'events'>,
+  })
 
   if (event === undefined) {
     return <CircularProgress />
@@ -28,6 +56,12 @@ export default function EventDashboard() {
     )
   }
 
+  const base = `/creator/events/${event._id}`
+  const segment = location.pathname.split('/').pop()
+
+  // Math.max keeps the tabs valid during the index -> /teams redirect
+  const tabValue = Math.max(0, TABS.findIndex((t) => t.segment === segment))
+
   return (
     <Stack spacing={4}>
       <Stack spacing={1}>
@@ -38,12 +72,25 @@ export default function EventDashboard() {
         <Typography color='text.secondary'>
           {new Date(event.scheduledAt).toLocaleString()}
         </Typography>
-        {event.description !== undefined && <Typography>{event.description}</Typography>}
+        {event.description !== undefined && (
+          <Typography>{event.description}</Typography>
+        )}
       </Stack>
 
-      <TeamSection eventId={event._id} canCreate={event.status !== 'ended'} />
-      <CopyLinkButton path={`/events/${event._id}/teams`} label='Copy participant link' />
-      <ManagerSection eventId={event._id} canAdd={event.status !== 'ended'} />
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={tabValue}>
+          {TABS.map((tab) => (
+            <Tab
+              key={tab.segment}
+              label={tab.label}
+              component={RouterLink}
+              to={`${base}/${tab.segment}`}
+            />
+          ))}
+        </Tabs>
+      </Box>
+
+      <Outlet context={{ event }} />
 
       <DeleteEventButton
         eventId={event._id}

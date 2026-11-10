@@ -39,7 +39,7 @@ export default function CreatorSignIn() {
             fullWidth
             startIcon={<GoogleIcon />}
             disabled={isLoading}
-            onClick={() => void signIn('google', { redirectTo: '/creator/new-event' })}
+            onClick={() => void signIn('google', { redirectTo: '/creator/events' })}
           >
             Continue with Google
           </Button>
