@@ -16,7 +16,12 @@ export default function CopyLinkButton({ path, label }: { path: string; label: s
   }
 
   return (
-    <Button size='small' startIcon={<LinkIcon />} onClick={() => void copy()}>
+    <Button
+      size='small'
+      color='primary'
+      startIcon={<LinkIcon />}
+      onClick={() => void copy()}
+    >
       {copied ? 'Copied' : label}
     </Button>
   )

@@ -4,7 +4,6 @@ import { useConvexAuth, useQuery } from 'convex/react'
 import { useAuthActions } from '@convex-dev/auth/react'
 import {
   Alert,
-  Box,
   Button,
   Card,
   CardContent,
@@ -55,57 +54,63 @@ export default function ManagerSignIn() {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'grid', placeItems: 'center', p: 2 }}>
-      <Card sx={{ width: '100%', maxWidth: 400 }}>
-        <CardContent>
-          <Stack component='form' spacing={2} onSubmit={handleSubmit} sx={{ py: 2 }}>
-            <Stack spacing={0.5} sx={{ alignItems: 'center' }}>
-              <Logo />
-              <Typography variant='h5'>Event manager</Typography>
-              <Typography color='text.secondary'>
-                Sign in with the account your event creator gave you
-              </Typography>
-            </Stack>
-
-            {error !== null && <Alert severity='error'>{error}</Alert>}
-
-            <TextField
-              label='Username'
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              autoComplete='username'
-              slotProps={{ htmlInput: { autoCapitalize: 'none', spellCheck: false } }}
-              autoFocus
-              required
-            />
-            <TextField
-              label='Password'
-              type='password'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete='current-password'
-              required
-            />
-
-            <Button
-              type='submit'
-              variant='contained'
-              size='large'
-              disabled={!canSubmit}
-              startIcon={submitting ? <CircularProgress size={18} /> : undefined}
+    <Card sx={{ width: '100%', maxWidth: 400, bgcolor: 'background.default' }}>
+      <CardContent>
+        <Stack component='form' spacing={2} onSubmit={handleSubmit} sx={{ py: 2 }}>
+          <Stack spacing={0.5} sx={{ alignItems: 'center' }}>
+            <Logo />
+            <Typography
+              variant='h5'
+              style={{
+                fontWeight: 600,
+                fontFamily: 'monospace',
+              }}
             >
-              Sign in
-            </Button>
-
-            <Typography variant='body2' color='text.secondary' sx={{ textAlign: 'center' }}>
-              Hosting an event?{' '}
-              <Link component={RouterLink} to='/creator/sign-in'>
-                Creator sign-in
-              </Link>
+              Event manager
+            </Typography>
+            <Typography color='text.secondary' align='center'>
+              Sign in with the account your event creator gave you
             </Typography>
           </Stack>
-        </CardContent>
-      </Card>
-    </Box>
+
+          {error !== null && <Alert severity='error'>{error}</Alert>}
+
+          <TextField
+            label='Username'
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            autoComplete='username'
+            slotProps={{ htmlInput: { autoCapitalize: 'none', spellCheck: false } }}
+            autoFocus
+            required
+          />
+          <TextField
+            label='Password'
+            type='password'
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete='current-password'
+            required
+          />
+
+          <Button
+            type='submit'
+            variant='contained'
+            size='large'
+            disabled={!canSubmit}
+            startIcon={submitting ? <CircularProgress size={18} /> : undefined}
+          >
+            Sign in
+          </Button>
+
+          <Typography variant='body2' color='text.secondary' sx={{ textAlign: 'center' }}>
+            Hosting an event?{' '}
+            <Link component={RouterLink} to='/creator/sign-in'>
+              Creator sign-in
+            </Link>
+          </Typography>
+        </Stack>
+      </CardContent>
+    </Card>
   )
 }

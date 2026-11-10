@@ -40,8 +40,4 @@ export const theme = createTheme({
   shape: {
     borderRadius: 8
   },
-
-  typography: {
-    fontFamily: '"Inter", "Roboto", sans-serif'
-  }
 })

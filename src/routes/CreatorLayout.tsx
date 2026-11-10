@@ -7,6 +7,7 @@ import {
   Button,
   CircularProgress,
   Container,
+  Paper,
   Toolbar,
   Typography,
 } from '@mui/material'
@@ -36,21 +37,41 @@ export default function CreatorLayout() {
   return (
     <Background>
       <AppBar position='static' color='transparent' elevation={0}>
-        <Toolbar>
-          <Logo />
-          <Typography variant='h6' sx={{ flexGrow: 1, ml: 1 }}>
+        <Toolbar sx={{ gap: 1 }}>
+          <Logo size='sm' />
+          <Typography
+            variant='h6'
+            sx={{
+              flexGrow: 1,
+              fontFamily: 'monospace',
+              fontWeight: 600,
+            }}
+          >
             Cyber Rescue
           </Typography>
           <ThemeToggle />
-          <Button onClick={() => void signOut()}>Sign out</Button>
+          <Button
+            variant='outlined'
+            color='secondary'
+            onClick={() => void signOut()}
+          >
+            Sign out
+          </Button>
         </Toolbar>
       </AppBar>
-      <Container
-        maxWidth='sm'
-        sx={{ py: 4 }}
-      >
-        <Outlet />
-      </Container>
+      <Box sx={{ pb: 4 }}>
+        <Container
+          component={Paper}
+          elevation={10}
+          maxWidth='sm'
+          sx={{
+            py: 4,
+            bgcolor: 'background.default',
+          }}
+        >
+          <Outlet />
+        </Container>
+      </Box>
     </Background>
   )
 }
