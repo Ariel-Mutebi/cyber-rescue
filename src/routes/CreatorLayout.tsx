@@ -13,6 +13,7 @@ import {
 import Logo from '../components/Logo'
 import { api } from '../../convex/_generated/api'
 import ThemeToggle from '../components/ThemeToggle'
+import Background from '../components/Background'
 
 export default function CreatorLayout() {
   const { isLoading, isAuthenticated } = useConvexAuth()
@@ -33,7 +34,7 @@ export default function CreatorLayout() {
   }
 
   return (
-    <>
+    <Background>
       <AppBar position='static' color='transparent' elevation={0}>
         <Toolbar>
           <Logo />
@@ -44,9 +45,12 @@ export default function CreatorLayout() {
           <Button onClick={() => void signOut()}>Sign out</Button>
         </Toolbar>
       </AppBar>
-      <Container maxWidth='sm' sx={{ py: 4 }}>
+      <Container
+        maxWidth='sm'
+        sx={{ py: 4 }}
+      >
         <Outlet />
       </Container>
-    </>
+    </Background>
   )
 }

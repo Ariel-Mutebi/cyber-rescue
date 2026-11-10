@@ -9,14 +9,14 @@ export const theme = createTheme({
     light: {
       palette: {
         primary: {
-          main: '#1E536E'
+          main: '#846c5b'
         },
         secondary: {
-          main: '#6F71A1'
+          main: '#f2d398'
         },
         background: {
-          default: '#E5EFFF',
-          paper: '#FFFFFF'
+          default: '#e8ebf7',
+          paper: '#f5f2ec'
         }
       }
     },
@@ -24,14 +24,14 @@ export const theme = createTheme({
     dark: {
       palette: {
         primary: {
-          main: '#5AA5CD'
+          main: '#9AA0A8'
         },
         secondary: {
-          main: '#9294BB'
+          main: '#a7c4b5'
         },
         background: {
-          default: '#101D29',
-          paper: '#192D3C'
+          default: '#151515',
+          paper: '#72705b'
         }
       }
     }

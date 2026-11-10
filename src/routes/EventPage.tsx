@@ -1,4 +1,4 @@
-import { Link as RouterLink, useParams } from 'react-router'
+import { Link, useParams } from 'react-router'
 import { useQuery } from 'convex/react'
 import { Alert, Button, Chip, CircularProgress, Stack, Typography } from '@mui/material'
 import { api } from '../../convex/_generated/api'
@@ -19,7 +19,7 @@ export default function EventPage() {
     return (
       <Stack spacing={2} sx={{ alignItems: 'flex-start' }}>
         <Alert severity='warning'>Event not found</Alert>
-        <Button component={RouterLink} to='/creator/new-event'>
+        <Button component={Link} to='/creator/new-event'>
           Schedule an event
         </Button>
       </Stack>
