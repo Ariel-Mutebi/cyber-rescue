@@ -18,6 +18,7 @@ import Home from './routes/Home'
 import JoinTeam from './routes/JoinTeam'
 import OpenTeams from './routes/OpenTeams'
 import TeamLobby from './routes/TeamLobby'
+import Terminal from './components/Terminal'
 
 export default function App() {
   return (
@@ -49,6 +50,7 @@ export default function App() {
 
       <Route element={<ParticipantLayout />}>
         <Route path='/' element={<Home />} />
+        <Route path='/terminal' element={<Terminal />} />
         <Route path='/join/:code' element={<JoinTeam />} />
         <Route path='/events/:eventId/teams' element={<OpenTeams />} />
         <Route path='/events/:eventId/team' element={<TeamLobby />} />

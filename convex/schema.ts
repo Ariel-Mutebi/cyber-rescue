@@ -65,7 +65,8 @@ export default defineSchema({
     .index('by_event', ['eventId'])
     // open rooms: eventId == X and memberCount < TEAM_SIZE
     .index('by_event_and_member_count', ['eventId', 'memberCount'])
-    .index('by_event_and_score', ['eventId', 'score']),
+    // leaderboard: score, then who solved earliest
+    .index('by_event_and_score', ['eventId', 'score', 'lastSolvedAt']),
 
   teamMembers: defineTable({
     teamId: v.id('teams'),
@@ -86,26 +87,51 @@ export default defineSchema({
     .index('by_team', ['teamId'])
     .index('by_team_and_participant', ['teamId', 'participantId']),
 
+  // Challenge library: owned by a creator, reusable across events.
+  // Never return a whole document to a participant: always project only the
+  // fields their role may see (scout / analyst / operator), and never flagHash.
   challenges: defineTable({
-    eventId: v.id('events'),
-    createdBy: v.id('users'),
-    order: v.number(), // position in the event's sequence
+    ownerId: v.id('users'),
     title: v.string(),
+    story: v.string(), // shared framing every role sees
+    difficulty: v.union(v.literal(1), v.literal(2), v.literal(3)),
     points: v.number(),
-    flagHash: v.string(), // never store the plaintext flag
+    flagFormat: v.string(),
+    flagHash: v.string(), // sha256 of the normalised flag
     // each role sees only its own piece
     scout: v.object({
-      data: v.optional(v.string()),
-      fileId: v.optional(v.id('_storage')),
+      title: v.string(), // e.g. 'Evidence'
+      body: v.optional(v.string()), // markdown / raw text
+      fileId: v.optional(v.id('_storage')), // image or file evidence
     }),
     analyst: v.object({
-      description: v.string(),
+      title: v.string(), // e.g. 'Briefing'
+      body: v.string(), // markdown
     }),
     operator: v.object({
-      // simulated terminal: exact command -> canned output
-      commands: v.array(v.object({ cmd: v.string(), output: v.string() })),
+      title: v.string(), // e.g. 'Toolbox'
+      body: v.string(), // markdown briefing: tools, flag format hints
+      startDir: v.string(), // cwd of the simulated shell
+      // Virtual filesystem preloaded into just-bash. Content is inline text.
+      files: v.array(v.object({ path: v.string(), content: v.string() })),
     }),
-  }).index('by_event_and_order', ['eventId', 'order']),
+    // hints a team can unlock, each costing points
+    hints: v.array(v.object({
+      afterSeconds: v.number(), // earliest the hint can be requested
+      text: v.string(),
+      penalty: v.number(),
+    })),
+    debrief: v.string(), // what the team learned, shown after solving
+  }).index('by_owner', ['ownerId']),
+
+  // Which library challenges an event uses, and in what order
+  eventChallenges: defineTable({
+    eventId: v.id('events'),
+    challengeId: v.id('challenges'),
+    order: v.number(), // position in the event's sequence
+  })
+    .index('by_event_and_order', ['eventId', 'order'])
+    .index('by_challenge', ['challengeId']), // check usage before deleting a challenge
 
   // A team's progress through one challenge
   teamChallenges: defineTable({
@@ -114,8 +140,10 @@ export default defineSchema({
     eventId: v.id('events'),
     rotation: v.number(), // 0 for the team's first challenge, then 1, 2...
     status: v.union(v.literal('active'), v.literal('solved')),
+    hintsUsed: v.number(),
     startedAt: v.number(),
     solvedAt: v.optional(v.number()),
+    pointsAwarded: v.optional(v.number()), // points minus hint penalties, fixed at solve time
   })
     .index('by_team', ['teamId'])
     .index('by_team_and_challenge', ['teamId', 'challengeId']),
