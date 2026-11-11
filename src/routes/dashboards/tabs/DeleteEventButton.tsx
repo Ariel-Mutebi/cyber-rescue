@@ -11,9 +11,9 @@ import {
   DialogTitle,
 } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { api } from '../../convex/_generated/api'
-import type { Id } from '../../convex/_generated/dataModel'
-import { errorMessage } from '../lib/errors'
+import { api } from '../../../../convex/_generated/api'
+import type { Id } from '../../../../convex/_generated/dataModel'
+import { errorMessage } from '../../../lib/errors'
 
 export default function DeleteEventButton({
   eventId,
@@ -55,7 +55,7 @@ export default function DeleteEventButton({
     <>
       <Button
         color='error'
-        variant='contained'
+        variant='outlined'
         disabled={disabled}
         endIcon={<DeleteIcon />}
         onClick={() => setOpen(true)}

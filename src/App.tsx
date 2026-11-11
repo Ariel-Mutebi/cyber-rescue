@@ -1,18 +1,19 @@
 import { Route, Routes, Navigate } from 'react-router'
-import CreatorLayout from './routes/CreatorLayout'
-import SignInLayout from './routes/SignInLayout'
+import CreatorLayout from './layouts/CreatorLayout'
+import SignInLayout from './layouts/SignInLayout'
 import CreatorSignIn from './routes/CreatorSignIn'
 import NewEvent from './routes/NewEvent'
-import EventDashboard from './routes/EventDashboard'
-import TeamsTab from './routes/TeamsTab'
-import ManagersTab from './routes/ManagersTab'
 import CreatorEvents from './routes/CreatorEvents'
+import EventDashboard from './routes/dashboards/EventDashboard'
+import TeamsTab from './routes/dashboards/tabs/TeamsTab'
+import ManagersTab from './routes/dashboards/tabs/ManagersTab'
+import DetailsTab from './routes/dashboards/tabs/DetailsTab'
 
-import ManagerLayout from './routes/ManagerLayout'
+import ManagerLayout from './layouts/ManagerLayout'
 import ManagerSignIn from './routes/ManagerSignIn'
-import ManagerDashboard from './routes/ManagerDashboard'
+import ManagerDashboard from './routes/dashboards/ManagerDashboard'
 
-import ParticipantLayout from './routes/ParticipantLayout'
+import ParticipantLayout from './layouts/ParticipantLayout'
 import Home from './routes/Home'
 import JoinTeam from './routes/JoinTeam'
 import OpenTeams from './routes/OpenTeams'
@@ -34,6 +35,7 @@ export default function App() {
           <Route index element={<Navigate to='teams' replace />} />
           <Route path='teams' element={<TeamsTab />} />
           <Route path='managers' element={<ManagersTab />} />
+          <Route path='details' element={<DetailsTab />} />
         </Route>
       </Route>
 
@@ -41,6 +43,7 @@ export default function App() {
         <Route element={<ManagerDashboard />}>
           <Route index element={<Navigate to='teams' replace />} />
           <Route path='teams' element={<TeamsTab />} />
+          <Route path='details' element={<DetailsTab />} />
         </Route>
       </Route>
 

@@ -10,10 +10,12 @@ import {
   Tabs,
   Typography,
 } from '@mui/material'
-import { api } from '../../convex/_generated/api'
+import { api } from '../../../convex/_generated/api'
 
-// Managers see a subset of the creator tabs. Same shape, same rules.
-const TABS = [{ label: 'Teams', segment: 'teams' }] as const
+const TABS = [
+  { label: 'Teams', segment: 'teams' },
+  { label: 'Details', segment: 'details' },
+] as const
 
 export default function ManagerDashboard() {
   const location = useLocation()
@@ -49,9 +51,6 @@ export default function ManagerDashboard() {
         <Typography color='text.secondary'>
           {new Date(event.scheduledAt).toLocaleString()}
         </Typography>
-        {event.description !== undefined && (
-          <Typography>{event.description}</Typography>
-        )}
       </Stack>
 
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

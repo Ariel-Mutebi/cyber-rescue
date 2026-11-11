@@ -2,7 +2,6 @@ import {
   Link as RouterLink,
   Outlet,
   useLocation,
-  useNavigate,
   useParams,
 } from 'react-router'
 import { useQuery } from 'convex/react'
@@ -17,25 +16,18 @@ import {
   Tabs,
   Typography,
 } from '@mui/material'
-import { api } from '../../convex/_generated/api'
-import type { Id } from '../../convex/_generated/dataModel'
-import DeleteEventButton from '../components/DeleteEventButton'
+import { api } from '../../../convex/_generated/api'
+import type { Id } from '../../../convex/_generated/dataModel'
 
-/**
- * Single source of truth for creator tabs.
- * Order here defines tab order; `segment` is the last URL path segment
- * and matches a child <Route path=…> in App.tsx.
- * Add a tab: one entry here + one child route. Nothing else.
- */
 const TABS = [
   { label: 'Teams', segment: 'teams' },
   { label: 'Managers', segment: 'managers' },
+  { label: 'Details', segment: 'details' },
 ] as const
 
 export default function EventDashboard() {
   const { eventId } = useParams()
   const location = useLocation()
-  const navigate = useNavigate()
 
   const event = useQuery(api.events.get, {
     eventId: eventId as Id<'events'>,
@@ -72,9 +64,6 @@ export default function EventDashboard() {
         <Typography color='text.secondary'>
           {new Date(event.scheduledAt).toLocaleString()}
         </Typography>
-        {event.description !== undefined && (
-          <Typography>{event.description}</Typography>
-        )}
       </Stack>
 
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -91,13 +80,6 @@ export default function EventDashboard() {
       </Box>
 
       <Outlet context={{ event }} />
-
-      <DeleteEventButton
-        eventId={event._id}
-        title={event.title}
-        disabled={event.status === 'live'}
-        onDeleted={() => navigate('/creator/events')}
-      />
     </Stack>
   )
 }

@@ -1,4 +1,5 @@
 import { useState, type SubmitEvent } from 'react'
+import { useOutletContext } from 'react-router'
 import { useAction, useMutation, useQuery } from 'convex/react'
 import {
   Alert,
@@ -20,20 +21,17 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
-import { api } from '../../convex/_generated/api'
-import { errorMessage } from '../lib/errors'
-import type { Id } from '../../convex/_generated/dataModel'
+import { api } from '../../../../convex/_generated/api'
+import { errorMessage } from '../../../lib/errors'
+import type { Id } from '../../../../convex/_generated/dataModel'
+import type { EventTabContext } from './TeamsTab'
 
 type Credentials = { username: string; password: string }
 
-export default function ManagerSection({
-  eventId,
-  canAdd,
-}: {
-  eventId: Id<'events'>
-  canAdd: boolean
-}) {
-  const managers = useQuery(api.users.listManagers, { eventId })
+export default function ManagersTab() {
+  const { event } = useOutletContext<EventTabContext>()
+
+  const managers = useQuery(api.users.listManagers, { eventId: event._id })
   const createManager = useAction(api.users.createManager)
   const revokeManager = useMutation(api.users.revokeManager)
 
@@ -42,12 +40,17 @@ export default function ManagerSection({
   const [error, setError] = useState<string | null>(null)
   const [credentials, setCredentials] = useState<Credentials | null>(null)
 
+  const canAdd = event.status !== 'ended'
+
   async function handleAdd(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
     setError(null)
     setCreating(true)
     try {
-      const { username: created, password } = await createManager({ eventId, username })
+      const { username: created, password } = await createManager({
+        eventId: event._id,
+        username,
+      })
       setCredentials({ username: created, password })
       setUsername('')
     } catch (err) {
@@ -57,9 +60,14 @@ export default function ManagerSection({
     }
   }
 
-  async function handleRevoke(managerId: Id<'users'>, managerUsername: string | undefined) {
+  async function handleRevoke(
+    managerId: Id<'users'>,
+    managerUsername: string | undefined,
+  ) {
     if (
-      !window.confirm(`Revoke ${managerUsername ?? 'this manager'}? They will be signed out.`)
+      !window.confirm(
+        `Revoke ${managerUsername ?? 'this manager'}? They will be signed out.`,
+      )
     ) {
       return
     }
@@ -88,7 +96,9 @@ export default function ManagerSection({
         <Button
           type='submit'
           variant='contained'
-          startIcon={creating ? <CircularProgress size={18} /> : <PersonAddIcon />}
+          startIcon={
+            creating ? <CircularProgress size={18} /> : <PersonAddIcon />
+          }
           disabled={!canAdd || creating || username.trim().length < 3}
           sx={{ flexShrink: 0, alignSelf: 'start' }}
         >
@@ -102,7 +112,8 @@ export default function ManagerSection({
         <CircularProgress />
       ) : managers.length === 0 ? (
         <Typography color='text.secondary'>
-          No managers yet. Each one gets a temporary account that expires after the event.
+          No managers yet. Each one gets a temporary account that expires after
+          the event.
         </Typography>
       ) : (
         managers.map((m) => (
@@ -110,7 +121,9 @@ export default function ManagerSection({
             <CardContent>
               <Stack direction='row' sx={{ alignItems: 'center' }}>
                 <Box sx={{ flexGrow: 1 }}>
-                  <Typography sx={{ fontFamily: 'monospace' }}>{m.username}</Typography>
+                  <Typography sx={{ fontFamily: 'monospace' }}>
+                    {m.username}
+                  </Typography>
                   {m.expiresAt !== undefined && (
                     <Typography variant='body2' color='text.secondary'>
                       Expires {new Date(m.expiresAt).toLocaleString()}
@@ -129,7 +142,10 @@ export default function ManagerSection({
         ))
       )}
 
-      <CredentialsDialog credentials={credentials} onClose={() => setCredentials(null)} />
+      <CredentialsDialog
+        credentials={credentials}
+        onClose={() => setCredentials(null)}
+      />
     </Stack>
   )
 }
@@ -171,15 +187,20 @@ function CredentialsDialog({
       <DialogContent>
         <Stack spacing={2}>
           <Alert severity='warning'>
-            Copy these now. The password is only shown once and can't be recovered.
+            Copy these now. The password is only shown once and can't be
+            recovered.
           </Alert>
           <Box sx={{ fontFamily: 'monospace' }}>
             <DialogContentText component='div'>Username</DialogContentText>
-            <Typography sx={{ fontFamily: 'inherit' }}>{credentials?.username}</Typography>
+            <Typography sx={{ fontFamily: 'inherit' }}>
+              {credentials?.username}
+            </Typography>
             <DialogContentText component='div' sx={{ mt: 1 }}>
               Password
             </DialogContentText>
-            <Typography sx={{ fontFamily: 'inherit' }}>{credentials?.password}</Typography>
+            <Typography sx={{ fontFamily: 'inherit' }}>
+              {credentials?.password}
+            </Typography>
           </Box>
         </Stack>
       </DialogContent>
