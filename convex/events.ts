@@ -174,3 +174,36 @@ export const remove = mutation({
     await ctx.scheduler.runAfter(0, internal.cleanup.deleteEventData, { eventId })
   },
 })
+
+export const start = mutation({
+  args: { eventId: v.id('events') },
+  handler: async (ctx, { eventId }) => {
+    const access = await getEventAccess(ctx, eventId)
+    if (access === null) throw new ConvexError('Event not found')
+    if (access.event.status !== 'scheduled') {
+      throw new ConvexError('Event has already started or ended')
+    }
+
+    const links = await ctx.db
+      .query('eventChallenges')
+      .withIndex('by_event_and_order', (q) => q.eq('eventId', eventId))
+      .take(1)
+    if (links.length === 0) {
+      throw new ConvexError('Add at least one challenge before starting')
+    }
+
+    await ctx.db.patch(eventId, { status: 'live', startedAt: Date.now() })
+  },
+})
+
+export const end = mutation({
+  args: { eventId: v.id('events') },
+  handler: async (ctx, { eventId }) => {
+    const access = await getEventAccess(ctx, eventId)
+    if (access === null) throw new ConvexError('Event not found')
+    if (access.event.status !== 'live') {
+      throw new ConvexError('Event is not live')
+    }
+    await ctx.db.patch(eventId, { status: 'ended', endedAt: Date.now() })
+  },
+})

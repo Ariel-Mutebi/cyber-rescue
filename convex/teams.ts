@@ -3,7 +3,7 @@ import { mutation, query, type MutationCtx } from './_generated/server'
 import { getEventAccess } from './lib/auth'
 import { MAX_TEAMS_PER_EVENT } from './lib/constants'
 import { randomString } from './lib/random'
-import { TEAM_SIZE } from './schema'
+import { TEAM_SIZE } from './lib/constants'
 import { getParticipant, requireParticipant } from './lib/participant'
 import { roleFor } from './lib/roles'
 

@@ -1,9 +1,7 @@
 import { defineSchema, defineTable } from 'convex/server'
 import { v } from 'convex/values'
 import { authTables } from '@convex-dev/auth/server'
-
-export const TEAM_SIZE = 3
-export const ROLES = ['scout', 'analyst', 'operator'] as const
+import { analyst, operator, scout, hints } from './lib/roles'
 
 export default defineSchema({
   ...authTables,
@@ -98,29 +96,10 @@ export default defineSchema({
     points: v.number(),
     flagFormat: v.string(),
     flagHash: v.string(), // sha256 of the normalised flag
-    // each role sees only its own piece
-    scout: v.object({
-      title: v.string(), // e.g. 'Evidence'
-      body: v.optional(v.string()), // markdown / raw text
-      fileId: v.optional(v.id('_storage')), // image or file evidence
-    }),
-    analyst: v.object({
-      title: v.string(), // e.g. 'Briefing'
-      body: v.string(), // markdown
-    }),
-    operator: v.object({
-      title: v.string(), // e.g. 'Toolbox'
-      body: v.string(), // markdown briefing: tools, flag format hints
-      startDir: v.string(), // cwd of the simulated shell
-      // Virtual filesystem preloaded into just-bash. Content is inline text.
-      files: v.array(v.object({ path: v.string(), content: v.string() })),
-    }),
-    // hints a team can unlock, each costing points
-    hints: v.array(v.object({
-      afterSeconds: v.number(), // earliest the hint can be requested
-      text: v.string(),
-      penalty: v.number(),
-    })),
+    scout,
+    analyst,
+    operator,
+    hints,
     debrief: v.string(), // what the team learned, shown after solving
   }).index('by_owner', ['ownerId']),
 
@@ -146,7 +125,8 @@ export default defineSchema({
     pointsAwarded: v.optional(v.number()), // points minus hint penalties, fixed at solve time
   })
     .index('by_team', ['teamId'])
-    .index('by_team_and_challenge', ['teamId', 'challengeId']),
+    .index('by_team_and_challenge', ['teamId', 'challengeId'])
+    .index('by_challenge', ['challengeId']),
 
   // Audit log of every flag attempt (rate limiting uses the rate-limiter component)
   submissions: defineTable({
