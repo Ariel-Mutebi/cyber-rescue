@@ -13,7 +13,7 @@ export default function CreatorSignIn() {
 
   // already signed in as a creator: skip this page
   if (me?.accountType === 'creator') {
-    return <Navigate to='/creator/new-event' replace />
+    return <Navigate to='/creator/' replace />
   }
 
   return (
