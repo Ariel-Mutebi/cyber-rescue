@@ -67,18 +67,31 @@ export const deleteEventData = internalMutation({
     }
     if (teams.length === TEAMS_PER_PASS) more = true
 
-    // challenges, plus any files attached to them
-    const challenges = await ctx.db
-      .query('challenges')
+    // Challenges live in the creator's library and are linked to events via
+    // eventChallenges. Delete each link; only delete the underlying challenge
+    // (and any stored file) when no other event still uses it.
+    const links = await ctx.db
+      .query('eventChallenges')
       .withIndex('by_event_and_order', (q) => q.eq('eventId', eventId))
       .take(BATCH)
-    for (const challenge of challenges) {
-      if (challenge.scout.fileId !== undefined) {
-        await ctx.storage.delete(challenge.scout.fileId)
+    for (const link of links) {
+      const challenge = await ctx.db.get(link.challengeId)
+      if (challenge !== null) {
+        const otherLinks = await ctx.db
+          .query('eventChallenges')
+          .withIndex('by_challenge', (q) => q.eq('challengeId', challenge._id))
+          .collect()
+        const usedElsewhere = otherLinks.some((l) => l.eventId !== eventId)
+        if (!usedElsewhere) {
+          if (challenge.scout.fileId !== undefined) {
+            await ctx.storage.delete(challenge.scout.fileId)
+          }
+          await ctx.db.delete(challenge._id)
+        }
       }
+      await ctx.db.delete(link._id)
     }
-    await deleteAll(ctx, challenges)
-    if (challenges.length === BATCH) more = true
+    if (links.length === BATCH) more = true
 
     const feedback = await ctx.db
       .query('feedback')

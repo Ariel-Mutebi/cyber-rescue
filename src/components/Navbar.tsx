@@ -24,13 +24,7 @@ export default function Navbar({ isCreator, signOut }: NavbarProps) {
           }}
         >
           <Logo size='sm' />
-          <Typography
-            variant='h6'
-            sx={{
-              fontFamily: 'monospace',
-              fontWeight: 600,
-            }}
-          >
+          <Typography variant='h6' sx={{ fontWeight: 600 }}>
             Cyber Rescue
           </Typography>        
         </Link>

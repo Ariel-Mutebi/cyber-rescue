@@ -40,4 +40,15 @@ export const theme = createTheme({
   shape: {
     borderRadius: 8
   },
+
+  typography: {
+    // inspired by wterm terminal's defaults
+    fontFamily: [
+      'Menlo',
+      'Consolas',
+      'DejaVu Sans Mono',
+      'Courier New',
+      'monospace',
+    ].join(', '),
+  }
 })
