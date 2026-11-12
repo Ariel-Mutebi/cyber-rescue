@@ -8,6 +8,7 @@ import EventDashboard from './routes/dashboards/EventDashboard'
 import TeamsTab from './routes/dashboards/tabs/TeamsTab'
 import ManagersTab from './routes/dashboards/tabs/ManagersTab'
 import DetailsTab from './routes/dashboards/tabs/DetailsTab'
+import ChallengeTab from './routes/dashboards/tabs/ChallengeTab'
 
 import ManagerLayout from './layouts/ManagerLayout'
 import ManagerSignIn from './routes/ManagerSignIn'
@@ -35,8 +36,9 @@ export default function App() {
         <Route path='events/:eventId' element={<EventDashboard />}>
           <Route index element={<Navigate to='teams' replace />} />
           <Route path='teams' element={<TeamsTab />} />
-          <Route path='managers' element={<ManagersTab />} />
+          <Route path='challenges' element={<ChallengeTab />} />
           <Route path='details' element={<DetailsTab />} />
+          <Route path='managers' element={<ManagersTab />} />
         </Route>
       </Route>
 
@@ -44,6 +46,7 @@ export default function App() {
         <Route element={<ManagerDashboard />}>
           <Route index element={<Navigate to='teams' replace />} />
           <Route path='teams' element={<TeamsTab />} />
+          <Route path='challenges' element={<ChallengeTab />} />
           <Route path='details' element={<DetailsTab />} />
         </Route>
       </Route>

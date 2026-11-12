@@ -8,7 +8,16 @@ import { startNextChallengeForTeam } from './lib/challenge'
 import { roleFor, operator, analyst, scout, hints } from './lib/roles'
 import { TEAM_SIZE } from './lib/constants'
 
-// Helpers
+// Limits
+const TITLE_MAX = 100
+const STORY_MAX = 5_000
+const FLAG_FORMAT_MAX = 100
+const FLAG_MAX = 500
+const BODY_MAX = 10_000
+const DEBRIEF_MAX = 5_000
+const HINT_TEXT_MAX = 1_000
+const HINTS_MAX = 20
+const POINTS_MAX = 10_000
 const MAX_FILES = 100
 const MAX_FILES_BYTES = 100_000
 
@@ -17,21 +26,86 @@ async function sha256(input: string): Promise<string> {
   return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('')
 }
 
-function validateOperator(operator: {
+// --- field validators ------------------------------------------------------
+// Each returns the value to store (usually trimmed), or throws.
+
+function validateTitle(raw: string): string {
+  const title = raw.trim()
+  if (title.length === 0) throw new ConvexError('Title is required')
+  if (title.length > TITLE_MAX) {
+    throw new ConvexError(`Title must be at most ${TITLE_MAX} characters`)
+  }
+  return title
+}
+
+function validateFlag(raw: string): string {
+  const flag = raw.trim()
+  if (flag.length === 0) throw new ConvexError('Flag is required')
+  if (flag.length > FLAG_MAX) {
+    throw new ConvexError(`Flag must be at most ${FLAG_MAX} characters`)
+  }
+  return flag
+}
+
+function validateLength(value: string, field: string, max: number): void {
+  if (value.length > max) {
+    throw new ConvexError(`${field} must be at most ${max} characters`)
+  }
+}
+
+function validatePoints(points: number): void {
+  // Number.isFinite rejects NaN and ±Infinity, which `points < 0` misses.
+  if (!Number.isFinite(points)) {
+    throw new ConvexError('Points must be a finite number')
+  }
+  if (points < 0) throw new ConvexError('Points must be non-negative')
+  if (points > POINTS_MAX) {
+    throw new ConvexError(`Points must be at most ${POINTS_MAX}`)
+  }
+}
+
+function validateHints(
+  list: { afterSeconds: number; penalty: number; text: string }[],
+): void {
+  if (list.length > HINTS_MAX) {
+    throw new ConvexError(`At most ${HINTS_MAX} hints allowed`)
+  }
+  for (const h of list) {
+    if (!Number.isFinite(h.afterSeconds) || h.afterSeconds < 0) {
+      throw new ConvexError('Hint time must be a non-negative number')
+    }
+    if (!Number.isFinite(h.penalty) || h.penalty < 0) {
+      throw new ConvexError('Hint penalty must be a non-negative number')
+    }
+    if (h.text.trim().length === 0) {
+      throw new ConvexError('Hint text cannot be empty')
+    }
+    if (h.text.length > HINT_TEXT_MAX) {
+      throw new ConvexError(`Hint text must be at most ${HINT_TEXT_MAX} characters`)
+    }
+  }
+}
+
+function validateOperator(op: {
   startDir: string
   files: { path: string; content: string }[]
-}) {
-  if (!operator.startDir.startsWith('/')) {
+}): void {
+  if (!op.startDir.startsWith('/')) {
     throw new ConvexError('startDir must be an absolute path')
   }
-  if (operator.files.length > MAX_FILES) {
+  if (op.files.length > MAX_FILES) {
     throw new ConvexError(`Too many operator files (max ${MAX_FILES})`)
   }
+  const seen = new Set<string>()
   let total = 0
-  for (const f of operator.files) {
+  for (const f of op.files) {
     if (!f.path.startsWith('/')) {
       throw new ConvexError(`File path must be absolute: ${f.path}`)
     }
+    if (seen.has(f.path)) {
+      throw new ConvexError(`Duplicate file path: ${f.path}`)
+    }
+    seen.add(f.path)
     total += f.content.length
   }
   if (total > MAX_FILES_BYTES) {
@@ -40,6 +114,8 @@ function validateOperator(operator: {
     )
   }
 }
+
+// --- helpers ---------------------------------------------------------------
 
 // MVP: every challenge belongs to exactly one event. Auth goes through the
 // event's access check, so creators and managers share the same code path.
@@ -87,11 +163,7 @@ function projectForRole(
   }
   if (role === 'scout') return { ...base, role, scout: challenge.scout }
   if (role === 'analyst') return { ...base, role, analyst: challenge.analyst }
-  return {
-    ...base,
-    role,
-    operator: challenge.operator,
-  }
+  return { ...base, role, operator: challenge.operator }
 }
 
 // --- admin -----------------------------------------------------------------
@@ -118,20 +190,23 @@ export const create = mutation({
       throw new ConvexError('Challenges can only be added before the event starts')
     }
 
-    if (args.title.trim().length === 0) {
-      throw new ConvexError('Title is required')
-    }
-    if (args.flag.trim().length === 0) {
-      throw new ConvexError('Flag is required')
-    }
-    if (args.points < 0) throw new ConvexError('Points must be non-negative')
+    const title = validateTitle(args.title)
+    const flag = validateFlag(args.flag)
+    validatePoints(args.points)
+    validateLength(args.story, 'Story', STORY_MAX)
+    validateLength(args.flagFormat, 'Flag format', FLAG_FORMAT_MAX)
+    validateLength(args.scout.body ?? '', 'Scout body', BODY_MAX)
+    validateLength(args.analyst.body, 'Analyst body', BODY_MAX)
+    validateLength(args.operator.body, 'Operator body', BODY_MAX)
+    validateLength(args.debrief, 'Debrief', DEBRIEF_MAX)
+    validateHints(args.hints)
     validateOperator(args.operator)
 
-    const flagHash = await sha256(args.flag.trim())
+    const flagHash = await sha256(flag)
 
     const challengeId = await ctx.db.insert('challenges', {
       ownerId: access.event.creatorId,
-      title: args.title.trim(),
+      title,
       story: args.story,
       difficulty: args.difficulty,
       points: args.points,
@@ -178,13 +253,37 @@ export const update = mutation({
   },
   handler: async (ctx, args) => {
     await requireEditableChallenge(ctx, args.challengeId)
-    if (args.operator !== undefined) validateOperator(args.operator)
+
+    // Validate each field only when the caller provided it.
+    const trimmedTitle =
+      args.title !== undefined ? validateTitle(args.title) : undefined
+    const trimmedFlag =
+      args.flag !== undefined ? validateFlag(args.flag) : undefined
+    if (args.points !== undefined) validatePoints(args.points)
+    if (args.story !== undefined) validateLength(args.story, 'Story', STORY_MAX)
+    if (args.flagFormat !== undefined) {
+      validateLength(args.flagFormat, 'Flag format', FLAG_FORMAT_MAX)
+    }
+    if (args.scout !== undefined) {
+      validateLength(args.scout.body ?? '', 'Scout body', BODY_MAX)
+    }
+    if (args.analyst !== undefined) {
+      validateLength(args.analyst.body, 'Analyst body', BODY_MAX)
+    }
+    if (args.operator !== undefined) {
+      validateLength(args.operator.body, 'Operator body', BODY_MAX)
+      validateOperator(args.operator)
+    }
+    if (args.hints !== undefined) validateHints(args.hints)
+    if (args.debrief !== undefined) {
+      validateLength(args.debrief, 'Debrief', DEBRIEF_MAX)
+    }
 
     const flagHash =
-      args.flag !== undefined ? await sha256(args.flag.trim()) : undefined
+      trimmedFlag !== undefined ? await sha256(trimmedFlag) : undefined
 
     await ctx.db.patch(args.challengeId, {
-      ...(args.title !== undefined && { title: args.title.trim() }),
+      ...(trimmedTitle !== undefined && { title: trimmedTitle }),
       ...(args.story !== undefined && { story: args.story }),
       ...(args.difficulty !== undefined && { difficulty: args.difficulty }),
       ...(args.points !== undefined && { points: args.points }),
@@ -368,6 +467,11 @@ export const submitFlag = mutation({
     if (team === null) throw new ConvexError('Team not found')
     if (team.unlockedAt === undefined) {
       throw new ConvexError('Complete the triple lock first')
+    }
+
+    // A too-long flag cannot possibly match; reject before hashing.
+    if (flag.length > FLAG_MAX) {
+      throw new ConvexError('Flag is too long')
     }
 
     const teamChallenge = await ctx.db

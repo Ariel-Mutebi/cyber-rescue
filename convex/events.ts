@@ -64,7 +64,11 @@ export const update = mutation({
     scheduledAt: v.optional(v.number()),
   },
   handler: async (ctx, { eventId, ...changes }) => {
-    const { event } = await requireEventOwner(ctx, eventId)
+    const access = await getEventAccess(ctx, eventId)
+    if (access === null) throw new ConvexError('Event not found')
+
+    const { event } = access
+
     if (event.status !== 'scheduled') {
       throw new ConvexError('Only scheduled events can be edited')
     }

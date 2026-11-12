@@ -21,8 +21,9 @@ import type { Id } from '../../../convex/_generated/dataModel'
 
 const TABS = [
   { label: 'Teams', segment: 'teams' },
-  { label: 'Managers', segment: 'managers' },
+  { label: 'Challenges', segment: 'challenges' },
   { label: 'Details', segment: 'details' },
+  { label: 'Managers', segment: 'managers' },
 ] as const
 
 export default function EventDashboard() {

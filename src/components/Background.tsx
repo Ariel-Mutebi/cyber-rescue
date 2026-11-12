@@ -4,19 +4,26 @@ import { useColorScheme } from '@mui/material/styles'
 import { StaticMeshGradient } from '@paper-design/shaders-react'
 
 export default function Background({ children }: PropsWithChildren) {
-  const { mode } = useColorScheme()
+  const { mode, systemMode } = useColorScheme()
+  const resolved = mode === 'system' ? systemMode : mode
 
-  let colors = ["#151515", "#716f5b", "#9aa0a7", "#bdffc6"]
-
-  if (mode === 'light') {
-    colors = ["#474248", "#acbed8", "#e8ebf7", "#f2d297"]
-  }
+  const colors =
+    resolved === 'dark'
+      ? [
+        '#151515',
+        '#282D1F',
+        '#9AA0A8',
+        '#bdffc6',
+      ]
+      : [
+        '#474248',
+        '#acbed8',
+        '#e8ebf7',
+        '#f2d398',
+      ]
 
   return (
-    <Box sx={{
-      position: 'relative',
-      minHeight: '100dvh',
-    }}>
+    <Box sx={{ position: 'relative', minHeight: '100dvh' }}>
       <StaticMeshGradient
         colors={colors}
         positions={42}
@@ -27,16 +34,9 @@ export default function Background({ children }: PropsWithChildren) {
         mixing={0.2}
         grainMixer={0.3}
         grainOverlay={0.8}
-        style={{
-          position: 'absolute',
-          inset: 0,
-        }}
+        style={{ position: 'absolute', inset: 0 }}
       />
-      <Box sx={{
-        isolation: 'isolate'
-      }}>
-        {children}
-      </Box>
+      <Box sx={{ isolation: 'isolate' }}>{children}</Box>
     </Box>
   )
 }

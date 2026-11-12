@@ -14,6 +14,7 @@ import { api } from '../../../convex/_generated/api'
 
 const TABS = [
   { label: 'Teams', segment: 'teams' },
+  { label: 'Challenges', segment: 'challenges' },
   { label: 'Details', segment: 'details' },
 ] as const
 
