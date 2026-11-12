@@ -6,6 +6,7 @@ import { api } from '../../../../convex/_generated/api'
 import type { EventTabContext } from './TeamsTab'
 import DeleteEventButton from './DeleteEventButton'
 import { errorMessage } from '../../../lib/errors'
+import StartEventButton from './StartEventButton'
 
 /** `<input type='datetime-local'>` wants 'YYYY-MM-DDTHH:mm' in local time. */
 function toLocalInput(ms: number): string {
@@ -23,7 +24,7 @@ export default function DetailsTab() {
   const update = useMutation(api.events.update)
 
   // Only the creator can edit, and only while the event is scheduled.
-  const editable = event.role === 'creator' && event.status === 'scheduled'
+  const editable = event.status === 'scheduled'
 
   const [title, setTitle] = useState(event.title)
   const [description, setDescription] = useState(event.description ?? '')
@@ -56,14 +57,9 @@ export default function DetailsTab() {
   }
 
   return (
-    <Stack spacing={4}>
+    <Stack spacing={2}>
       <Stack component='form' spacing={2} onSubmit={handleSubmit}>
-        {event.role === 'manager' && (
-          <Alert severity='info'>
-            Only the event creator can edit these details.
-          </Alert>
-        )}
-        {event.role === 'creator' && event.status !== 'scheduled' && (
+        {!editable && (
           <Alert severity='info'>
             This event has {event.status}. Details can only be edited while
             it's scheduled.
@@ -108,6 +104,11 @@ export default function DetailsTab() {
           </Button>
         )}
       </Stack>
+
+      <StartEventButton
+        eventId={event._id}
+        status={event.status}
+      />
 
       {event.role === 'creator' && (
         <DeleteEventButton
