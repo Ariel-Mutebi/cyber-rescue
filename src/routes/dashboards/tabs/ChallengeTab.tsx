@@ -42,7 +42,11 @@ export default function ChallengesTab() {
     <Stack spacing={3}>
       <Stack
         direction="row"
-        sx={{ alignItems: 'center', justifyContent: 'space-between' }}
+        sx={{
+          gap: 1,
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
       >
         <Box>
           <Typography variant="h6">Challenges</Typography>
@@ -52,7 +56,12 @@ export default function ChallengesTab() {
             {locked && ' · locked once the event has started'}
           </Typography>
         </Box>
-        <Button variant="contained" disabled={locked} onClick={() => setEditing('new')}>
+        <Button
+          variant="contained"
+          disabled={locked}
+          onClick={() => setEditing('new')}
+          sx={{ flexShrink: 0 }}
+        >
           New challenge
         </Button>
       </Stack>

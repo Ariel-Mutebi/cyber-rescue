@@ -25,52 +25,66 @@ const ROLE_INFO: Record<string, string> = {
 
 export default function TeamLobby() {
   const { eventId = '' } = useParams()
-  const event = useQuery(api.events.getPublic, { eventId })
   const [token] = useParticipantToken(eventId)
+
+  const event = useQuery(api.events.getPublic, { eventId })
   const mine = useQuery(api.teams.getMine, token === null ? 'skip' : { token })
+  const current = useQuery(api.challenges.getCurrent, token === null ? 'skip' : { token })
 
-  if (event === undefined) return <CircularProgress />
-  if (event === null) return <Alert severity='warning'>Event not found</Alert>
-
-  // no session, or no team yet: back to the open-teams list
+  // 1. No token → nothing to query
   if (token === null) return <Navigate to={`/events/${eventId}/teams`} replace />
-  if (mine === undefined) return <CircularProgress />
+
+  // 2. Any query still in flight
+  if (event === undefined || mine === undefined || current === undefined) {
+    return <CircularProgress />
+  }
+
+  // 3. No event or no team
+  if (event === null) return <Alert severity="warning">Event not found</Alert>
   if (mine === null) return <Navigate to={`/events/${eventId}/teams`} replace />
+
+  // 4. Past the lobby → play
+  if (
+    current.status !== 'waiting-for-team' &&
+    current.status !== 'waiting-for-event'
+  ) {
+    return <Navigate to={`/events/${eventId}/play`} replace />
+  }
 
   const emptySeats = mine.capacity - mine.teammates.length
 
   return (
     <Stack spacing={3}>
       <Stack spacing={0.5}>
-        <Typography variant='overline' color='text.secondary'>
+        <Typography variant="overline" color="text.secondary">
           {event.title}
         </Typography>
-        <Typography variant='h5'>{mine.name}</Typography>
+        <Typography variant="h5">{mine.name}</Typography>
       </Stack>
 
-      <Card variant='outlined'>
+      <Card variant="outlined">
         <CardContent>
-          <Typography variant='overline' color='text.secondary'>
+          <Typography variant="overline" color="text.secondary">
             Your role
           </Typography>
-          <Typography variant='h5' sx={{ textTransform: 'capitalize' }}>
+          <Typography variant="h5" sx={{ textTransform: 'capitalize' }}>
             {mine.myRole}
           </Typography>
-          <Typography color='text.secondary'>{ROLE_INFO[mine.myRole]}</Typography>
-          <Typography variant='body2' color='text.secondary' sx={{ pt: 1 }}>
+          <Typography color="text.secondary">{ROLE_INFO[mine.myRole]}</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ pt: 1 }}>
             Roles rotate after every challenge.
           </Typography>
         </CardContent>
       </Card>
 
       <Stack spacing={1}>
-        <Typography variant='subtitle2'>
+        <Typography variant="subtitle2">
           Team ({mine.teammates.length}/{mine.capacity})
         </Typography>
         {mine.teammates.map((m) => (
           <Stack
             key={m.participantId}
-            direction='row'
+            direction="row"
             spacing={1}
             sx={{ alignItems: 'center' }}
           >
@@ -78,18 +92,24 @@ export default function TeamLobby() {
               {m.handle}
               {m.isMe && ' (you)'}
             </Typography>
-            <Chip label={m.role} size='small' sx={{ textTransform: 'capitalize' }} />
+            <Chip
+              label={m.role}
+              size="small"
+              sx={{ textTransform: 'capitalize' }}
+            />
           </Stack>
         ))}
         {Array.from({ length: emptySeats }, (_, i) => (
-          <Typography key={`empty-${i}`} color='text.secondary'>
+          <Typography key={`empty-${i}`} color="text.secondary">
             Waiting for a teammate…
           </Typography>
         ))}
       </Stack>
 
       {emptySeats === 0 ? (
-        <Alert severity='success'>Your team is full. Waiting for the event to start.</Alert>
+        <Alert severity="success">
+          Your team is full. Waiting for the event to start.
+        </Alert>
       ) : (
         <InviteLink joinCode={mine.joinCode} />
       )}
@@ -113,19 +133,19 @@ function InviteLink({ joinCode }: { joinCode: string }) {
 
   return (
     <Stack spacing={1}>
-      <Typography variant='subtitle2'>Invite teammates</Typography>
+      <Typography variant="subtitle2">Invite teammates</Typography>
       <TextField
         value={link}
-        size='small'
+        size="small"
         fullWidth
         onFocus={(e) => e.target.select()}
         slotProps={{
           input: {
             readOnly: true,
             endAdornment: (
-              <InputAdornment position='end'>
+              <InputAdornment position="end">
                 <Button
-                  size='small'
+                  size="small"
                   startIcon={<ContentCopyIcon />}
                   onClick={() => void copy()}
                 >

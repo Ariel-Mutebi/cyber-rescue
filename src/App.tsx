@@ -21,6 +21,8 @@ import OpenTeams from './routes/OpenTeams'
 import TeamLobby from './routes/TeamLobby'
 import Terminal from './components/Terminal'
 
+import Play from './routes/play/Play'
+
 export default function App() {
   return (
     <Routes>
@@ -57,6 +59,7 @@ export default function App() {
         <Route path='/join/:code' element={<JoinTeam />} />
         <Route path='/events/:eventId/teams' element={<OpenTeams />} />
         <Route path='/events/:eventId/team' element={<TeamLobby />} />
+        <Route path="/events/:eventId/play" element={<Play />} />
       </Route>
 
       <Route path='*' element={<Navigate to='/' replace />} />
