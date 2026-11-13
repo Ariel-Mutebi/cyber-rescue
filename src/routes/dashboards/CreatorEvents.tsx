@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
-import { api } from '../../convex/_generated/api'
+import { api } from '../../../convex/_generated/api'
 
 export default function CreatorEvents() {
   const events = useQuery(api.events.listMine)

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router'
 import { useMutation } from 'convex/react'
 import { ConvexError } from 'convex/values'
 import { Alert, Button, Stack, TextField, Typography } from '@mui/material'
-import { api } from '../../convex/_generated/api'
+import { api } from '../../../convex/_generated/api'
 
 export default function NewEvent() {
   const createEvent = useMutation(api.events.create)

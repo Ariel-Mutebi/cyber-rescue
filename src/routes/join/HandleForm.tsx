@@ -1,9 +1,9 @@
 import { useState, type SubmitEvent } from 'react'
 import { useMutation } from 'convex/react'
 import { Alert, Button, CircularProgress, Stack, TextField, Typography } from '@mui/material'
-import { api } from '../../convex/_generated/api'
-import type { Id } from '../../convex/_generated/dataModel'
-import { errorMessage } from '../lib/errors'
+import { api } from '../../../convex/_generated/api'
+import type { Id } from '../../../convex/_generated/dataModel'
+import { errorMessage } from '../../lib/errors'
 
 export default function HandleForm({
   eventId,

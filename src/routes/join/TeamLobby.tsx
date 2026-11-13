@@ -14,8 +14,8 @@ import {
   Typography,
 } from '@mui/material'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import { api } from '../../convex/_generated/api'
-import { useParticipantToken } from '../lib/useParticipantToken'
+import { api } from '../../../convex/_generated/api'
+import { useParticipantToken } from '../../lib/useParticipantToken'
 
 const ROLE_INFO: Record<string, string> = {
   scout: 'You get the raw data for each problem.',

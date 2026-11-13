@@ -9,9 +9,9 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import { api } from '../../convex/_generated/api'
-import { errorMessage } from '../lib/errors'
-import { useParticipantToken } from '../lib/useParticipantToken'
+import { api } from '../../../convex/_generated/api'
+import { errorMessage } from '../../lib/errors'
+import { useParticipantToken } from '../../lib/useParticipantToken'
 import HandleForm from './HandleForm'
 
 export default function JoinTeam() {
