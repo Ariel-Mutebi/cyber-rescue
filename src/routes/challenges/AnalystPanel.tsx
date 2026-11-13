@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material'
+import { MuiMarkdown } from 'mui-markdown'
 import type { FunctionReturnType } from 'convex/server'
 import { api } from '../../../convex/_generated/api'
 import Window from '../../components/Window'
@@ -17,9 +17,9 @@ export default function AnalystPanel({
       title={challenge.analyst.title}
       sx={{ minHeight: 0 }}
     >
-      <Typography sx={{ whiteSpace: 'pre-wrap' }}>
+      <MuiMarkdown>
         {challenge.analyst.body}
-      </Typography>
+      </MuiMarkdown>
     </Window>
   )
 }

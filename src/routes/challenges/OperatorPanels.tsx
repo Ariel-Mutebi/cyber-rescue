@@ -1,5 +1,5 @@
-// src/pages/events/challenge/OperatorPanels.tsx
-import { Chip, Stack, Typography } from '@mui/material'
+import { Chip, Stack } from '@mui/material'
+import { MuiMarkdown } from 'mui-markdown'
 import type { FunctionReturnType } from 'convex/server'
 import type { Id } from '../../../convex/_generated/dataModel'
 import { api } from '../../../convex/_generated/api'
@@ -47,9 +47,9 @@ export default function OperatorPanels({
           />
         }
       >
-        <Typography sx={{ whiteSpace: 'pre-wrap' }}>
+        <MuiMarkdown>
           {challenge.operator.body}
-        </Typography>
+        </MuiMarkdown>
       </Window>
     </Stack>
   )
