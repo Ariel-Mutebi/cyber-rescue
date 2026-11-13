@@ -1,22 +1,17 @@
 import { Chip, Stack } from '@mui/material'
 import { MuiMarkdown } from 'mui-markdown'
-import type { FunctionReturnType } from 'convex/server'
 import type { Id } from '../../../convex/_generated/dataModel'
-import { api } from '../../../convex/_generated/api'
 import Window from '../../components/Window'
-import Terminal from '../../components/Terminal'
+import Terminal from './Terminal'
+import type { ActiveChallenge } from './ActiveChallenge'
 
-type OperatorChallenge = Extract<
-  Extract<FunctionReturnType<typeof api.challenges.getCurrent>, { status: 'active' }>['challenge'],
-  { role: 'operator' }
->
-
-export default function OperatorPanels({
-  challenge,
-}: {
-  challenge: OperatorChallenge
+interface OperatorProps {
   teamChallengeId: Id<'teamChallenges'>
-}) {
+  challenge: Extract<ActiveChallenge, { role: 'operator' }>
+}
+
+
+export default function OperatorPanels({ challenge }: OperatorProps) {
   return (
     <Stack
       spacing={2}
@@ -28,7 +23,7 @@ export default function OperatorPanels({
       }}
     >
       <Window
-        title={challenge.operator.title || 'Toolbox'}
+        title={challenge.operator.title}
         scroll={false}
         sx={{ minHeight: 0 }}
         contentSx={{ p: 0 }}

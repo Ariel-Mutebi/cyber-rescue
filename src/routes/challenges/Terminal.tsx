@@ -1,15 +1,14 @@
+import '@wterm/react/css'
 import { useCallback, useRef } from 'react'
 import { BashShell } from '@wterm/just-bash'
 import { Terminal as WTerm, useTerminal } from '@wterm/react'
-import '@wterm/react/css'
-import type { FunctionReturnType } from 'convex/server'
-import { api } from '../../convex/_generated/api'
+import type { ActiveChallenge } from './ActiveChallenge'
 
-type Current = FunctionReturnType<typeof api.challenges.getCurrent>
-type ActiveCurrent = Extract<Current, { status: 'active' }>
-type Operator = Extract<ActiveCurrent['challenge'], { role: 'operator' }>['operator']
+interface OperatorProps {
+  operator: Extract<ActiveChallenge, { role: 'operator' }>['operator']
+}
 
-export default function Terminal({ operator }: { operator: Operator }) {
+export default function Terminal({ operator }: OperatorProps) {
   const { ref, write } = useTerminal()
   const shellRef = useRef<BashShell | null>(null)
 

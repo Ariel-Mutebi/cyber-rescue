@@ -1,17 +1,12 @@
 import { MuiMarkdown } from 'mui-markdown'
-import type { FunctionReturnType } from 'convex/server'
-import { api } from '../../../convex/_generated/api'
 import Window from '../../components/Window'
+import type { ActiveChallenge } from './ActiveChallenge'
 
-type Current = FunctionReturnType<typeof api.challenges.getCurrent>
-type ActiveCurrent = Extract<Current, { status: 'active' }>
-type AnalystChallenge = Extract<ActiveCurrent['challenge'], { role: 'analyst' }>
+interface AnalystProps {
+  challenge: Extract<ActiveChallenge, { role: 'analyst' }>
+}
 
-export default function AnalystPanel({
-  challenge,
-}: {
-  challenge: AnalystChallenge
-}) {
+export default function AnalystPanel({ challenge }: AnalystProps) {
   return (
     <Window
       title={challenge.analyst.title}

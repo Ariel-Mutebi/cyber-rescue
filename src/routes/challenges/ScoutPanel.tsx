@@ -1,19 +1,17 @@
 import { Box } from '@mui/material'
 import { MuiMarkdown } from 'mui-markdown'
-import type { FunctionReturnType } from 'convex/server'
-import { api } from '../../../convex/_generated/api'
 import Window from '../../components/Window'
+import type { ActiveChallenge } from './ActiveChallenge'
 
-type ScoutChallenge = Extract<
-  Extract<FunctionReturnType<typeof api.challenges.getCurrent>, { status: 'active' }>['challenge'],
-  { role: 'scout' }
->
+interface ScoutProps {
+  challenge: Extract<ActiveChallenge, { role: 'scout' }>
+}
 
-export default function ScoutPanel({ challenge }: { challenge: ScoutChallenge }) {
+export default function ScoutPanel({ challenge }: ScoutProps) {
   return (
     <Window title={challenge.scout.title} sx={{ minHeight: 0 }}>
       <MuiMarkdown>
-        {challenge.scout.body ?? 'No evidence provided.'}
+        {challenge.scout.body}
       </MuiMarkdown>
       {challenge.scout.fileId && (
         <Box sx={{ mt: 2, color: 'text.secondary', fontStyle: 'italic' }}>
