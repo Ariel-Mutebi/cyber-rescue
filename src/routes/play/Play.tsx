@@ -45,13 +45,13 @@ export default function Play() {
     return <TripleLock current={current} token={token} />
   }
 
-  // current.status === 'active' — build this next.
-  return (
-    <SimpleScreen
-      title="Challenge incoming"
-      body="The active challenge view isn't wired up yet."
-    />
-  )
+  if (current.status === 'active') {
+    return <Navigate to={`/events/${eventId}/challenge`} replace />
+  }
+
+  // Unreachable: every status is handled above. Exhaustiveness guard for TS.
+  const _exhaustive: never = current
+  return _exhaustive
 }
 
 function SimpleScreen({ title, body }: { title: string; body: string }) {

@@ -19,9 +19,10 @@ import Home from './routes/Home'
 import JoinTeam from './routes/JoinTeam'
 import OpenTeams from './routes/OpenTeams'
 import TeamLobby from './routes/TeamLobby'
-import Terminal from './components/Terminal'
 
 import Play from './routes/play/Play'
+import ChallengeLayout from './layouts/ChallengeLayout'
+import ChallengeScreen from './routes/challenges/ChallengeScreen'
 
 export default function App() {
   return (
@@ -55,11 +56,14 @@ export default function App() {
 
       <Route element={<ParticipantLayout />}>
         <Route path='/' element={<Home />} />
-        <Route path='/terminal' element={<Terminal />} />
         <Route path='/join/:code' element={<JoinTeam />} />
         <Route path='/events/:eventId/teams' element={<OpenTeams />} />
         <Route path='/events/:eventId/team' element={<TeamLobby />} />
         <Route path="/events/:eventId/play" element={<Play />} />
+      </Route>
+
+      <Route path="/events/:eventId/challenge" element={<ChallengeLayout />}>
+        <Route index element={<ChallengeScreen />} />
       </Route>
 
       <Route path='*' element={<Navigate to='/' replace />} />

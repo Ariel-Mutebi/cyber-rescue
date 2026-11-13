@@ -22,6 +22,7 @@ import type * as lib_participant from "../lib/participant.js";
 import type * as lib_random from "../lib/random.js";
 import type * as lib_roles from "../lib/roles.js";
 import type * as locks from "../locks.js";
+import type * as messages from "../messages.js";
 import type * as participants from "../participants.js";
 import type * as teams from "../teams.js";
 import type * as users from "../users.js";
@@ -47,6 +48,7 @@ declare const fullApi: ApiFromModules<{
   "lib/random": typeof lib_random;
   "lib/roles": typeof lib_roles;
   locks: typeof locks;
+  messages: typeof messages;
   participants: typeof participants;
   teams: typeof teams;
   users: typeof users;

@@ -533,3 +533,33 @@ export const submitFlag = mutation({
     }
   },
 })
+
+export const useHint = mutation({
+  args: { token: v.string() },
+  handler: async (ctx, { token }) => {
+    const participant = await requireParticipant(ctx, token)
+    const membership = await getTeamMembership(ctx, participant)
+    if (membership === null) throw new ConvexError('Join a team first')
+
+    const active = await ctx.db
+      .query('teamChallenges')
+      .withIndex('by_team', (q) => q.eq('teamId', membership.teamId))
+      .filter((q) => q.eq(q.field('status'), 'active'))
+      .first()
+    if (active === null) throw new ConvexError('No active challenge')
+
+    const challenge = await ctx.db.get(active.challengeId)
+    if (challenge === null) throw new ConvexError('Challenge not found')
+
+    if (active.hintsUsed >= challenge.hints.length) {
+      throw new ConvexError('No more hints')
+    }
+    const hint = challenge.hints[active.hintsUsed]
+    if (Date.now() - active.startedAt < hint.afterSeconds * 1000) {
+      throw new ConvexError('This hint is not available yet')
+    }
+
+    await ctx.db.patch(active._id, { hintsUsed: active.hintsUsed + 1 })
+    return { index: active.hintsUsed, text: hint.text, penalty: hint.penalty }
+  },
+})
