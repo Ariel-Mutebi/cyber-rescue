@@ -3,13 +3,12 @@ import { IconButton } from '@mui/material'
 import { LightMode, DarkMode } from '@mui/icons-material'
 
 export default function ThemeToggle() {
-  const { mode, setMode } = useColorScheme()
-
-  if (!mode) return null
+  const { mode, systemMode, setMode } = useColorScheme()
+  const resolved = mode === 'system' ? systemMode : mode
 
   return (
     <IconButton
-      onClick={() => setMode(mode === 'dark' ? 'light' : 'dark')}
+      onClick={() => setMode(resolved === 'dark' ? 'light' : 'dark')}
       color="inherit"
     >
       {mode === 'dark' ? <LightMode /> : <DarkMode />}
